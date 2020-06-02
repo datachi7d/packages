@@ -6,14 +6,15 @@
 #
 
 include $(TOPDIR)/rules.mk
+include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=dpdk
-PKG_VERSION=17.11
+PKG_VERSION=18.11
 PKG_RELEASE=1
 
 PKG_SOURCE_URL:=http://fast.dpdk.org/rel/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_HASH:=75e8103183ba1aa012f2e63a4b50bcd2e8a155376722b64fc59c8f07d8f8d930
+PKG_HASH:=76543b0a96f9e10a39a341eb137b363d26ece9b508d3f307668e91281d7a72fd
 
 PKG_MANINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 
@@ -27,7 +28,7 @@ define Package/dpdk/Default
   SECTION:=net
   CATEGORY:=Network
   URL:=http://dpdk.org
-  DEPENDS:=@(i386||x86_64||arm||aarch64||powerpc64) +python
+  DEPENDS:=@(i386||x86_64||arm||aarch64||powerpc64) +python +pciutils +@CONFIG_KERNEL_UIO
 endef
 
 define Package/dpdk
@@ -37,7 +38,8 @@ $(call Package/dpdk/Default)
 endef
 
 TARGET_CFLAGS += \
-	-D_GNU_SOURCE
+	-D_GNU_SOURCE \
+    -Wno-error=implicit-fallthrough=
 
 HOST_CFLAGS += \
 	-D_GNU_SOURCE
@@ -47,10 +49,16 @@ DPDK_VARS:= \
 	HOST_CPPFLAGS="$(HOST_CPPFLAGS)" \
 	HOST_CFLAGS="$(HOST_CFLAGS)" \
 	HOST_LDFLAGS="$(HOST_LDFLAGS)" \
+    TARGET_CC="$(TARGET_CC)" \
 	TARGET_CFLAGS="$(TARGET_CFLAGS)" \
 	TARGET_LDFLAGS="$(TARGET_LDFLAGS)" \
 	TARGET_ASFLAGS="$(TARGET_ASFLAGS)" \
-	CROSS="$(TARGET_CROSS)"
+	CROSS="$(TARGET_CROSS)" \
+    RTE_KERNELDIR="$(LINUX_DIR)" \
+    RTE_TARGET="$(ARCH)-native-linuxapp-gcc" \
+    RTE_SDK="$(PKG_BUILD_DIR)" \
+    RTE_OUTPUT="$(PKG_BUILD_DIR)/$(ARCH)-native-linuxapp-gcc" \
+    kerneldir="/lib/modules/$(LINUX_VERSION)/extra/dpdk"
 
 CONFIGURE_VARS += \
 	$(DPDK_VARS)
@@ -96,14 +104,17 @@ MAKE_FLAGS += \
 	T=$(DPDK_ARCH)-$(DPDK_MACHINE)-$(DPDK_EXECENV)-$(DPDK_TOOLCHAIN)
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/include $(1)/lib $(1)/share
-	$(CP) $(PKG_INSTALL_DIR)/include/dpdk $(1)/include
+	$(INSTALL_DIR) $(1)/include/dpdk $(1)/lib $(1)/share
+	$(CP) $(PKG_INSTALL_DIR)/include/* $(1)/include/dpdk
 	$(CP) $(PKG_INSTALL_DIR)/lib/* $(1)/lib
 	$(CP) $(PKG_INSTALL_DIR)/share/* $(1)/share
 endef
 
 define Package/dpdk/install
-	:
+	$(INSTALL_DIR) $(1)/bin $(1)/usr/share/dpdk $(1)/lib
+	$(CP) $(PKG_INSTALL_DIR)/bin/* $(1)/bin
+	$(CP) $(PKG_INSTALL_DIR)/share/dpdk/usertools $(1)/usr/share/dpdk/
+	$(CP) $(PKG_INSTALL_DIR)/lib/* $(1)/lib
 endef
 
 $(eval $(call BuildPackage,dpdk))

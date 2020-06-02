@@ -1,8 +1,8 @@
-diff --git a/drivers/bus/pci/linux/pci_uio.c b/drivers/bus/pci/linux/pci_uio.c
-index 92b7f02..ec4e197 100644
---- a/drivers/bus/pci/linux/pci_uio.c
-+++ b/drivers/bus/pci/linux/pci_uio.c
-@@ -532,21 +532,21 @@ pci_uio_ioport_write(struct rte_pci_ioport *p,
+Index: dpdk-18.11/drivers/bus/pci/linux/pci_uio.c
+===================================================================
+--- dpdk-18.11.orig/drivers/bus/pci/linux/pci_uio.c
++++ dpdk-18.11/drivers/bus/pci/linux/pci_uio.c
+@@ -526,21 +526,21 @@ pci_uio_ioport_write(struct rte_pci_iopo
  	for (s = data; len > 0; s += size, reg += size, len -= size) {
  		if (len >= 4) {
  			size = 4;
