@@ -104,10 +104,8 @@ MAKE_FLAGS += \
 	T=$(DPDK_ARCH)-$(DPDK_MACHINE)-$(DPDK_EXECENV)-$(DPDK_TOOLCHAIN)
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/include/dpdk $(1)/lib $(1)/share
-	$(CP) $(PKG_INSTALL_DIR)/include/* $(1)/include/dpdk
-	$(CP) $(PKG_INSTALL_DIR)/lib/* $(1)/lib
-	$(CP) $(PKG_INSTALL_DIR)/share/* $(1)/share
+	$(INSTALL_DIR) $(1)/opt/dpdk
+	$(CP) $(PKG_INSTALL_DIR)/* $(1)/opt/dpdk
 endef
 
 define Package/dpdk/install

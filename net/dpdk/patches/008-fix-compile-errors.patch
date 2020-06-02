@@ -70,6 +70,15 @@ Index: dpdk-18.11/config/common_base
 ===================================================================
 --- dpdk-18.11.orig/config/common_base
 +++ dpdk-18.11/config/common_base
+@@ -38,7 +38,7 @@ CONFIG_RTE_ARCH_STRICT_ALIGN=n
+ #
+ # Compile to share library
+ #
+-CONFIG_RTE_BUILD_SHARED_LIB=n
++CONFIG_RTE_BUILD_SHARED_LIB=y
+ 
+ #
+ # Use newest code breaking previous ABI
 @@ -202,13 +202,13 @@ CONFIG_RTE_LIBRTE_BNXT_PMD=y
  #
  # Compile burst-oriented Chelsio Terminator (CXGBE) PMD
@@ -86,3 +95,16 @@ Index: dpdk-18.11/config/common_base
  
  # NXP DPAA Bus
  CONFIG_RTE_LIBRTE_DPAA_BUS=n
+Index: dpdk-18.11/mk/rte.lib.mk
+===================================================================
+--- dpdk-18.11.orig/mk/rte.lib.mk
++++ dpdk-18.11/mk/rte.lib.mk
+@@ -55,7 +55,7 @@ exe2cmd = $(strip $(call dotfile,$(patsu
+ 
+ ifeq ($(LINK_USING_CC),1)
+ # Override the definition of LD here, since we're linking with CC
+-LD := $(CC) $(CPU_CFLAGS) $(EXTRA_CFLAGS)
++override LD := $(CC) $(CPU_CFLAGS) $(EXTRA_CFLAGS)
+ _CPU_LDFLAGS := $(call linkerprefix,$(CPU_LDFLAGS))
+ override EXTRA_LDFLAGS := $(call linkerprefix,$(EXTRA_LDFLAGS))
+ else
