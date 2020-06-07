@@ -170,28 +170,28 @@ endef
 #
 ovs_libopenvswitch_title:=Open vSwitch (libopenvswitch.so)
 ovs_libopenvswitch_hidden:=1
-ovs_libopenvswitch_depends:=+libopenssl +librt
+ovs_libopenvswitch_depends:=+libopenssl +librt +dpdk
 ovs_libopenvswitch_files:=usr/lib/libopenvswitch*.so*
 $(eval $(call OvsPackageTemplate,libopenvswitch))
 
 
 ovs_libofproto_title:=Open vSwitch (libofproto.so libsflow.so)
 ovs_libofproto_hidden:=1
-ovs_libofproto_depends:=+librt
+ovs_libofproto_depends:=+librt +dpdk
 ovs_libofproto_files:=usr/lib/libofproto*.so* usr/lib/libsflow*.so*
 $(eval $(call OvsPackageTemplate,libofproto))
 
 
 ovs_libovsdb_title:=Open vSwitch (libovsdb.so)
 ovs_libovsdb_hidden:=1
-ovs_libovsdb_depends:=+librt
+ovs_libovsdb_depends:=+librt +dpdk
 ovs_libovsdb_files:=usr/lib/libovsdb*.so*
 $(eval $(call OvsPackageTemplate,libovsdb))
 
 
 ovs_libovn_title:=Open vSwitch (libovn.so)
 ovs_libovn_hidden:=1
-ovs_libovn_depends:=+librt
+ovs_libovn_depends:=+librt +dpdk
 ovs_libovn_files:=usr/lib/libovn*.so*
 $(eval $(call OvsPackageTemplate,libovn))
 
