@@ -1,0 +1,63 @@
+Index: dpdk-18.11/lib/librte_acl/Makefile
+===================================================================
+--- dpdk-18.11.orig/lib/librte_acl/Makefile
++++ dpdk-18.11/lib/librte_acl/Makefile
+@@ -39,6 +39,9 @@ endif
+ # then add support for AVX2 classify method.
+ #
+ 
++
++ifeq ($(findstring AVX2,$(CPUFLAGS)),AVX2)
++
+ #check if flag for AVX2 is already on, if not set it up manually
+ ifeq ($(findstring RTE_MACHINE_CPUFLAG_AVX2,$(CFLAGS)),RTE_MACHINE_CPUFLAG_AVX2)
+ 	CC_AVX2_SUPPORT=1
+@@ -60,6 +63,8 @@ ifeq ($(CC_AVX2_SUPPORT), 1)
+ 	CFLAGS_rte_acl.o += -DCC_AVX2_SUPPORT
+ endif
+ 
++endif
++
+ # install this header file
+ SYMLINK-$(CONFIG_RTE_LIBRTE_ACL)-include := rte_acl_osdep.h
+ SYMLINK-$(CONFIG_RTE_LIBRTE_ACL)-include += rte_acl.h
+Index: dpdk-18.11/drivers/net/enic/Makefile
+===================================================================
+--- dpdk-18.11.orig/drivers/net/enic/Makefile
++++ dpdk-18.11/drivers/net/enic/Makefile
+@@ -41,6 +41,7 @@ SRCS-$(CONFIG_RTE_LIBRTE_ENIC_PMD) += ba
+ 
+ # The current implementation assumes 64-bit pointers
+ CC_AVX2_SUPPORT=0
++ifeq ($(findstring AVX2,$(CPUFLAGS)),AVX2)
+ ifeq ($(CONFIG_RTE_ARCH_X86_64),y)
+ # Figure out if the compiler supports avx2. The extra check using
+ # -march=core-avx2 is necessary to support users who build for the
+@@ -62,6 +63,7 @@ else
+ 	endif
+ endif
+ endif
++endif
+ 
+ ifeq ($(CC_AVX2_SUPPORT), 1)
+ 	SRCS-$(CONFIG_RTE_LIBRTE_ENIC_PMD) += enic_rxtx_vec_avx2.c
+Index: dpdk-18.11/drivers/net/i40e/Makefile
+===================================================================
+--- dpdk-18.11.orig/drivers/net/i40e/Makefile
++++ dpdk-18.11/drivers/net/i40e/Makefile
+@@ -89,6 +89,7 @@ SRCS-$(CONFIG_RTE_LIBRTE_I40E_PMD) += rt
+ SRCS-$(CONFIG_RTE_LIBRTE_I40E_PMD) += i40e_tm.c
+ SRCS-$(CONFIG_RTE_LIBRTE_I40E_PMD) += i40e_vf_representor.c
+ 
++ifeq ($(findstring AVX2,$(CPUFLAGS)),AVX2)
+ ifeq ($(findstring RTE_MACHINE_CPUFLAG_AVX2,$(CFLAGS)),RTE_MACHINE_CPUFLAG_AVX2)
+ 	CC_AVX2_SUPPORT=1
+ else
+@@ -103,6 +104,7 @@ else
+ 		endif
+ 	endif
+ endif
++endif
+ 
+ ifeq ($(CC_AVX2_SUPPORT), 1)
+ 	SRCS-$(CONFIG_RTE_LIBRTE_I40E_INC_VECTOR) += i40e_rxtx_vec_avx2.c

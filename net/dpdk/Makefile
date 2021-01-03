@@ -39,7 +39,14 @@ endef
 
 TARGET_CFLAGS += \
 	-D_GNU_SOURCE \
-    -Wno-error=implicit-fallthrough=
+    -Wno-error=implicit-fallthrough= 
+
+EXTRA_CFLAGS += \
+    -mno-rdrnd \
+    -mno-fsgsbase \
+    -mavx \
+    -mno-avx2 \
+    -mno-avx512f
 
 HOST_CFLAGS += \
 	-D_GNU_SOURCE
@@ -58,7 +65,8 @@ DPDK_VARS:= \
     RTE_TARGET="$(ARCH)-native-linuxapp-gcc" \
     RTE_SDK="$(PKG_BUILD_DIR)" \
     RTE_OUTPUT="$(PKG_BUILD_DIR)/$(ARCH)-native-linuxapp-gcc" \
-    kerneldir="/lib/modules/$(LINUX_VERSION)/extra/dpdk"
+    EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+    kerneldir="/kernel"
 
 CONFIGURE_VARS += \
 	$(DPDK_VARS)
@@ -115,4 +123,31 @@ define Package/dpdk/install
 	$(CP) $(PKG_INSTALL_DIR)/lib/* $(1)/lib
 endef
 
+
+define KernelPackage/dpdk-igb
+  TITLE:=IGB DPDK Driver
+  KCONFIG:= \
+           CONFIG_HWPOISON_INJECT=y \
+           CONFIG_HUGETLBFS=y \
+           CONFIG_HUGETLB_PAGE=y \
+           CONFIG_UIO=y \
+           CONFIG_UIO_CIF \
+           CONFIG_UIO_PDRV_GENIRQ \
+           CONFIG_UIO_DMEM_GENIRQ \
+           CONFIG_UIO_AEC \
+           CONFIG_UIO_SERCOS3 \
+           CONFIG_UIO_PCI_GENERIC \
+           CONFIG_UIO_NETX \
+           CONFIG_UIO_PRUSS \
+           CONFIG_UIO_MF624 \
+           CONFIG_UIO_HV_GENERIC
+  FILES:=$(PKG_INSTALL_DIR)/kernel/igb_uio.ko
+  AUTOLOAD:=$(call AutoLoad,30,igb_uio)
+endef
+
+define KernelPackage/loop/description
+  Kernel module for loopback device support
+endef
+
+$(eval $(call KernelPackage,dpdk-igb))
 $(eval $(call BuildPackage,dpdk))
